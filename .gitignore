@@ -109,6 +109,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+myvenv/
 
 # Spyder project settings
 .spyderproject
@@ -127,3 +128,17 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+myvenv/pyvenv.cfg
+myvenv/bin/activate
+myvenv/bin/activate.csh
+.gitignore
+myvenv/bin/activate.fish
+myvenv/bin/Activate.ps1
+myvenv/bin/flask
+myvenv/bin/pip
+myvenv/bin/pip3
+myvenv/bin/pip3.10
+myvenv/bin/python
+myvenv/bin/python3
+myvenv/bin/python3.10
+myvenv/include/site/python3.10/greenlet/greenlet.h
