@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Todo App</title>
+    </head>
         <body>
-            <form action="/create_todo" method="POST">
+            <form action="/todo/create" method="POST">
                 <input type="text" name="description"/>
                 <input type="submit" name="Create"/>
             </form>
@@ -11,6 +13,5 @@
                 <li>{{ d.description }}</li>
                 {% endfor %}
             </ul>
-        </body>
-    </head>
+        </body>   
 </html>

@@ -25,9 +25,9 @@ def index():
     return render_template('index.html', data=Todo.query.all())
 
 
-@app.route('/create_todo', methods=['POST'])
+@app.route('/todo/create', methods=['POST'])
 def create_todo():
-    description = request.form['description']
+    description = request.form.get('description', '')
     todo = Todo(description=description)
     try:
         db.session.add(todo)
