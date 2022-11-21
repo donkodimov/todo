@@ -1,5 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+
+import sys
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@localhost:5432/todoapp'
@@ -21,3 +23,22 @@ db.create_all()
 @app.route('/')
 def index():
     return render_template('index.html', data=Todo.query.all())
+
+
+@app.route('/create_todo', methods=['POST'])
+def create_todo():
+    description = request.form['description']
+    todo = Todo(description=description)
+    try:
+        db.session.add(todo)
+        db.session.commit()
+        return redirect(url_for('index'))
+    except ValueError as e:
+        print(e)
+        db.session.rollback()
+        flash(
+            "An error occurred." + todo.name.data + " could not be listed."
+        )
+        print(sys.exc_info())
+    
+
