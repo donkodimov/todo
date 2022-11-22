@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 import sys
@@ -17,7 +17,7 @@ class Todo(db.Model):
         return f'<Todo {self.id} {self.description}>'
 
 
-db.create_all()
+#db.create_all()
 
 
 @app.route('/')
@@ -27,12 +27,14 @@ def index():
 
 @app.route('/todo/create', methods=['POST'])
 def create_todo():
-    description = request.form.get('description', '')
+    description = request.get_json()['description']
     todo = Todo(description=description)
     try:
         db.session.add(todo)
         db.session.commit()
-        return redirect(url_for('index'))
+        return jsonify({
+            'description': todo.description
+        })
     except ValueError as e:
         print(e)
         db.session.rollback()
