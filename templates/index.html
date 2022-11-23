@@ -2,17 +2,27 @@
 <html>
     <head>
         <title>Todo App</title>
-        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='styles.css') }}" />
+        <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Dummy ToDo App" />
     </head>
         <body>
-            <form id="form">
+            <header>
+                <img id="logo" src="https://cdn.freecodecamp.org/platform/universal/fcc_primary.svg">
+                <h1>Dummy ToDo App</h1>
+                <nav>
+                  
+                </nav>
+              </header>
+            <form class="form" id="form">
                 <input type="text" id="description" name="description"/>
                 <input type="submit" name="Create"/>
             </form>
             <div id="errors" class="hidden">
                 Somethind wnet wrong!
             </div>
-            <ul id="todo">
+            <ul class="list" id="todo">
                 {% for d in data %}
                 <li>
                     <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} />
