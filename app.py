@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 
 import sys
@@ -27,22 +27,24 @@ def index():
 
 @app.route('/todo/create', methods=['POST'])
 def create_todo():
-    description = request.get_json()['description']
-    todo = Todo(description=description)
+    error = False
+    body = {}
     try:
+        description = request.get_json()['description']
+        todo = Todo(description=description)
         db.session.add(todo)
         db.session.commit()
-        return jsonify({
-            'description': todo.description
-        })
+        body['description'] = todo.description
     except ValueError as e:
-        print(e)
+        error = True
         db.session.rollback()
-        flash(
-            "An error occurred." + todo.name.data + " could not be listed."
-        )
         print(sys.exc_info())
     finally:
         db.session.close()
+    if error:
+        abort(400)
+    else:
+        return jsonify(body)
+        
     
 
