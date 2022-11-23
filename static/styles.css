@@ -44,3 +44,25 @@ body {
     margin-top: 70px;
 
   }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 200px;
+  }
+  li {
+    clear: both;
+  }
+  li button {
+    border: none;
+    outline: none;
+    color: red;
+    float: right;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  .lists-wrapper, .todos-wrapper {
+    display: inline-block;
+    vertical-align: top;
+  }
