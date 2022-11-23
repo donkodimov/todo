@@ -27,6 +27,7 @@
                 <li>
                     <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} />
                     {{ d.description }}
+                    <button id="{{ d.id }}">&cross;</button>
                 </li>
                 {% endfor %}
             </ul>
@@ -85,6 +86,20 @@
                         document.getElementById('errors').className = '';
                     })
                 }
+                document.addEventListener("click", function(evnt){
+                    console.log(evnt.target.id);
+                    id = evnt.target.id;
+                    fetch('/todo/'+ id, {
+                            method: 'DELETE'
+                        })
+                        .then(function() {
+                            document.getElementById('errors').className = 'hidden';
+                        })
+                        .catch(function(err) {
+                            console.log(err)
+                            document.getElementById('errors').className = '';
+                        })
+                });
             </script>
         </body>   
 </html>
