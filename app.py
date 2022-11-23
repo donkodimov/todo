@@ -61,3 +61,23 @@ def create_todo():
         abort(400)
     else:
         return jsonify(body)
+
+
+@app.route('/todo/<todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+    error = False
+    body = {}
+    try:
+        todo = Todo.query.get(todo_id)
+        db.session.delete(todo)
+        db.session.commit()
+    except ValueError as e:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(400)
+    else:
+        return render_template('index.html', data=Todo.query.order_by('id').all())
