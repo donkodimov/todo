@@ -42,5 +42,7 @@ def create_todo():
             "An error occurred." + todo.name.data + " could not be listed."
         )
         print(sys.exc_info())
+    finally:
+        db.session.close()
     
 
