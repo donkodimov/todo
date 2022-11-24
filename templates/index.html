@@ -22,12 +22,12 @@
             <div id="errors" class="hidden">
                 Somethind wnet wrong!
             </div>
-            <ul class="list" id="todo">
+            <ul class="list" id="todos">
                 {% for d in data %}
                 <li>
                     <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} />
                     {{ d.description }}
-                    <button id="{{ d.id }}">&cross;</button>
+                    <button class="delete-button" data-id="{{ d.id }}">&cross;</button>
                 </li>
                 {% endfor %}
             </ul>
@@ -78,7 +78,7 @@
                         console.log('response',jsonResponse);
                         li = document.createElement('li');
                         li.innerText = desc;
-                        document.getElementById('todo').appendChild(li);
+                        document.getElementById('todos').appendChild(li);
                         document.getElementById('errors').className = 'hidden';
                     })
                     .catch(function(err) {
@@ -86,7 +86,7 @@
                         document.getElementById('errors').className = '';
                     })
                 }
-                document.addEventListener("click", function(evnt){
+                /* document.addEventListener("click", function(evnt){
                     console.log(evnt.target.id);
                     id = evnt.target.id;
                     fetch('/todo/'+ id, {
@@ -99,7 +99,19 @@
                             console.log(err)
                             document.getElementById('errors').className = '';
                         })
-                });
+                }); */
+                const deleteBtns = document.querySelectorAll('.delete-button');
+                for (let i = 0; i < deleteBtns.length; i++) {
+                    const btn =deleteBtns[i];
+                    btn.onclick = function(e) {
+                        const todoId = e.target.dataset['id'];
+                        fetch('/todo/' + todoId, {
+                            method: 'DELETE'
+                        }).then(function (response) {
+                            e.target.parentNode.remove();
+                        })
+                    }
+                }
             </script>
         </body>   
 </html>
