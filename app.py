@@ -9,31 +9,36 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres@localhost:5432/to
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+
 class Todo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(), nullable=False)
     completed = db.Column(db.Boolean, nullable=False, default=False)
-    list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
+    list_id = db.Column(db.Integer, db.ForeignKey(
+        'todolists.id'), nullable=False)
 
     def __repr__(self):
         return f'<Todo {self.id} {self.description}>'
+
 
 class TodoList(db.Model):
     __tablename__ = 'todolists'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
-    todos = db.relationship('Todo', backref='list', lazy=True, cascade='all, delete-orphan')
+    todos = db.relationship('Todo', backref='list',
+                            lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<TodoList {self.id} {self.name}>'
 
-#db.create_all()
+# db.create_all()
 
 
 @app.route('/lists/<list_id>')
 def get_list_todos(list_id):
-    return render_template('index.html', data=Todo.query.filter_by(list_id=list_id).order_by('id').all())
+    return render_template('index.html', lists=TodoList.query.all(), todos=Todo.query.filter_by(list_id=list_id).order_by('id').all())
+
 
 @app.route('/')
 def index():
@@ -54,6 +59,7 @@ def set_completed(todo_id):
     finally:
         db.session.close()
     return redirect(url_for('index'))
+
 
 @app.route('/todo/create', methods=['POST'])
 def create_todo():
@@ -76,6 +82,26 @@ def create_todo():
     else:
         return jsonify(body)
 
+@app.route('/todo/create-list', methods=['POST'])
+def create_list():
+    error = False
+    body = {}
+    try:
+        name = request.get_json()['name']
+        list = TodoList(name=name)
+        db.session.add(list)
+        db.session.commit()
+        body['name'] = list.name
+    except ValueError as e:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(400)
+    else:
+        return jsonify(body)
 
 @app.route('/todo/<todo_id>', methods=['DELETE'])
 def delete_todo(todo_id):
@@ -93,4 +119,4 @@ def delete_todo(todo_id):
     if error:
         abort(400)
     else:
-        return jsonify({ 'success': True })
+        return jsonify({'success': True})
