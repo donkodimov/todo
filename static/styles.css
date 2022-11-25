@@ -49,7 +49,8 @@ body {
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 200px;
+    width: 300px;
+    display: inline-block;
   }
   li {
     clear: both;
@@ -65,4 +66,5 @@ body {
   .lists-wrapper, .todos-wrapper {
     display: inline-block;
     vertical-align: top;
+    margin-top: 70px;
   }
