@@ -23,7 +23,7 @@
             <input type="text" id="description-list" name="description-list" />
             <input type="submit" name="Create" />
         </form>
-        <div id="errors-list" class="hidden">Somethind wnet wrong!</div>
+        <div id="errors-list" class="hidden">Somethind went wrong!</div>
         <ul id="lists">
             {% for list in lists %}
             <li>
@@ -32,6 +32,7 @@
                 <a href="/lists/{{ list.id }}">
                     {{ list.name }}
                 </a>
+                <button class="delete-button-list" data-id="{{ list.id }}">&cross;</button>
             </li>
             {% endfor %}
         </ul>
@@ -43,7 +44,7 @@
             <input type="text" id="description-todo" name="description-todo" />
             <input type="submit" name="Create" />
         </form>
-        <div id="errors-todos" class="hidden">Somethind wnet wrong!</div>
+        <div id="errors-todos" class="hidden">Somethind went wrong!</div>
         <ul class="list" id="todos">
             {% for todo in todos %}
             <li>
@@ -163,6 +164,18 @@
             btn.onclick = function (e) {
                 const todoId = e.target.dataset["id"];
                 fetch("/todo/" + todoId, {
+                    method: "DELETE",
+                }).then(function (response) {
+                    e.target.parentNode.remove();
+                });
+            };
+        }
+        const deleteBtnsLst = document.querySelectorAll(".delete-button-list");
+        for (let i = 0; i < deleteBtnsLst.length; i++) {
+            const btn = deleteBtnsLst[i];
+            btn.onclick = function (e) {
+                const listId = e.target.dataset["id"];
+                fetch("/lists/" + listId + "/delete", {
                     method: "DELETE",
                 }).then(function (response) {
                     e.target.parentNode.remove();
