@@ -19,7 +19,7 @@ class Todo(db.Model):
         'todolists.id'), nullable=False)
 
     def __repr__(self):
-        return f'<Todo {self.id} {self.description}>'
+        return f'<Todo ID: {self.id}, description: {self.description}, complete: {self.complete}>'
 
 
 class TodoList(db.Model):
@@ -31,7 +31,7 @@ class TodoList(db.Model):
                             lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'<TodoList {self.id} {self.name}>'
+        return f'<TodoList ID: {self.id}, name: {self.name}, todos: {self.todos}>'
 
 # db.create_all()
 
@@ -51,6 +51,7 @@ def index():
 
 @app.route('/todo/<todo_id>/set-completed', methods=['POST'])
 def set_completed(todo_id):
+    error = False
     try:
         completed = request.get_json()['completed']
         print('completed', completed)
@@ -72,10 +73,11 @@ def create_todo():
     try:
         description = request.get_json()['description']
         list_id = request.get_json()['active_list']
-        print(request.get_json())
-        todo = Todo(description=description, list_id=list_id)
+        todo = Todo(description=description, completed=False, list_id=list_id)
         db.session.add(todo)
         db.session.commit()
+        body['id'] = todo.id
+        body['complete'] = todo.completed
         body['description'] = todo.description
     except ValueError as e:
         error = True
@@ -84,7 +86,7 @@ def create_todo():
     finally:
         db.session.close()
     if error:
-        abort(400)
+        abort(500)
     else:
         return jsonify(body)
 
