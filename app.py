@@ -39,7 +39,7 @@ class TodoList(db.Model):
 @app.route('/lists/<list_id>')
 def get_list_todos(list_id):
     return render_template('index.html',
-     lists=TodoList.query.all(),
+     lists=TodoList.query.order_by('id').all(),
      active_list=TodoList.query.get(list_id),
      todos=Todo.query.filter_by(list_id=list_id).order_by('id').all())
 
@@ -90,7 +90,7 @@ def create_todo():
     else:
         return jsonify(body)
 
-@app.route('/todo/create-list', methods=['POST'])
+@app.route('/list/create', methods=['POST'])
 def create_list():
     error = False
     body = {}
@@ -111,7 +111,7 @@ def create_list():
     else:
         return jsonify(body)
 
-@app.route('/todo/<todo_id>', methods=['DELETE'])
+@app.route('/todo/<todo_id>/delete', methods=['DELETE'])
 def delete_todo(todo_id):
     error = False
     try:
@@ -128,3 +128,44 @@ def delete_todo(todo_id):
         abort(400)
     else:
         return jsonify({'success': True})
+
+@app.route('/lists/<list_id>/delete', methods=['DELETE'])
+def delete_list(list_id):
+    error = False
+    try:
+        list = TodoList.query.get(list_id)
+        db.session.delete(list)
+        db.session.commit()
+    except ValueError as e:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(500)
+    else:
+        return jsonify({'success': True})
+
+@app.route('/lists/<list_id>/set-completed', methods=['POST'])
+def set_completed_list(list_id):
+    error = False
+    try:
+        completed = request.get_json()['completed']
+        print('completed', completed)
+        list = TodoList.query.get(list_id)
+        for todo in list.todos:
+            todo.completed = completed
+        
+        list.completed = completed
+        db.session.commit()
+    except:
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    
+    if error:
+        abort(500)
+    else:
+        return '', 200

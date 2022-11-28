@@ -18,12 +18,12 @@
     </header>
 
     <div class="lists-wrapper">
-        <h4>{{ active_list.name }}</h4>
+        <h4>TODO LISTS</h4>
         <form class="form" id="form-list">
             <input type="text" id="description-list" name="description-list" />
             <input type="submit" name="Create" />
         </form>
-        <div id="errors-list" class="hidden">Somethind wnet wrong!</div>
+        <div id="errors-list" class="hidden">Somethind went wrong!</div>
         <ul id="lists">
             {% for list in lists %}
             <li>
@@ -32,18 +32,19 @@
                 <a href="/lists/{{ list.id }}">
                     {{ list.name }}
                 </a>
+                <button class="delete-button-list" data-id="{{ list.id }}">&cross;</button>
             </li>
             {% endfor %}
         </ul>
     </div>
 
     <div class="todos-wrapper">
-        <h4 id="active-list" data-id="{{ active_list.id }}">{{ active_list.name }}</h4>
+        <h4 id="active-list" data-id="{{ active_list.id }}"> TODO Items: {{ active_list.name }}</h4>
         <form class="form" id="form-todo">
             <input type="text" id="description-todo" name="description-todo" />
             <input type="submit" name="Create" />
         </form>
-        <div id="errors-todos" class="hidden">Somethind wnet wrong!</div>
+        <div id="errors-todos" class="hidden">Somethind went wrong!</div>
         <ul class="list" id="todos">
             {% for todo in todos %}
             <li>
@@ -64,7 +65,7 @@
                 console.log("event", e);
                 const newCompleted = e.target.checked;
                 const todoId = e.target.dataset["id"];
-                fetch("todo/" + todoId + "/set-completed", {
+                fetch("/todo/" + todoId + "/set-completed", {
                     method: "POST",
                     body: JSON.stringify({
                         completed: newCompleted,
@@ -79,6 +80,31 @@
                     .catch(function (err) {
                         console.log(err);
                         document.getElementById("errors-todos").className = "";
+                    });
+            };
+        }
+        const checkboxesList = document.querySelectorAll(".list-completed");
+        for (let i = 0; i < checkboxesList.length; i++) {
+            const checkbox = checkboxesList[i];
+            checkbox.onchange = function (e) {
+                console.log("event", e);
+                const newCompleted = e.target.checked;
+                const listId = e.target.dataset["id"];
+                fetch("/lists/" + listId + "/set-completed", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        completed: newCompleted,
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then(function () {
+                        document.getElementById("errors-lists").className = "hidden";
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        document.getElementById("errors-lists").className = "";
                     });
             };
         }
@@ -119,7 +145,7 @@
             e.preventDefault();
             const name = descInputList.value;
             descInputList.value = "";
-            fetch("/todo/create-list", {
+            fetch("/list/create", {
                 method: "POST",
                 body: JSON.stringify({
                     name: name,
@@ -162,7 +188,19 @@
             const btn = deleteBtns[i];
             btn.onclick = function (e) {
                 const todoId = e.target.dataset["id"];
-                fetch("/todo/" + todoId, {
+                fetch("/todo/" + todoId + "/delete", {
+                    method: "DELETE",
+                }).then(function (response) {
+                    e.target.parentNode.remove();
+                });
+            };
+        }
+        const deleteBtnsLst = document.querySelectorAll(".delete-button-list");
+        for (let i = 0; i < deleteBtnsLst.length; i++) {
+            const btn = deleteBtnsLst[i];
+            btn.onclick = function (e) {
+                const listId = e.target.dataset["id"];
+                fetch("/lists/" + listId + "/delete", {
                     method: "DELETE",
                 }).then(function (response) {
                     e.target.parentNode.remove();
