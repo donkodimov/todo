@@ -74,6 +74,7 @@ document.getElementById("form-todo").onsubmit = function (e) {
       li.innerText = desc;
       document.getElementById("todos").appendChild(li);
       document.getElementById("errors-todos").className = "hidden";
+      window.location.reload(true);
     })
     .catch(function (err) {
       console.log(err);
@@ -103,6 +104,7 @@ document.getElementById("form-list").onsubmit = function (e) {
       li.innerText = name;
       document.getElementById("lists").appendChild(li);
       document.getElementById("errors-lists").className = "hidden";
+      window.location.reload(true);
     })
     .catch(function (err) {
       console.log(err);
