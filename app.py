@@ -38,6 +38,12 @@ class TodoList(db.Model):
 
 @app.route('/lists/<list_id>')
 def get_list_todos(list_id):
+    list = TodoList.query.get(list_id)
+    list.completed = True
+    for todo in list.todos:
+            if todo.completed == False:
+                list.completed = False               
+
     return render_template('index.html',
      lists=TodoList.query.order_by('id').all(),
      active_list=TodoList.query.get(list_id),

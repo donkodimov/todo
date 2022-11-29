@@ -16,6 +16,7 @@ for (let i = 0; i < checkboxes.length; i++) {
     })
       .then(function () {
         document.getElementById("errors-todos").className = "hidden";
+        window.location.reload(true);
       })
       .catch(function (err) {
         console.log(err);
@@ -41,6 +42,7 @@ for (let i = 0; i < checkboxesList.length; i++) {
     })
       .then(function () {
         document.getElementById("errors-lists").className = "hidden";
+        window.location.reload(true);
       })
       .catch(function (err) {
         console.log(err);
