@@ -1,56 +1,63 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Todo App</title>
-        <style>
-            .hidden {
-                display: none;
-            }
-        </style>
-    </head>
-        <body>
-            <form id="form">
-                <input type="text" id="description" name="description"/>
-                <input type="submit" name="Create"/>
-            </form>
-            <div id="errors" class="hidden">
-                Somethind wnet wrong!
-            </div>
-            <ul id="todo">
-                {% for d in data %}
-                <li>{{ d.description }}</li>
-                {% endfor %}
-            </ul>
-            <script>
-                const descInput = document.getElementById('description');
-                document.getElementById('form').onsubmit = function(e) {
-                    e.preventDefault();
-                    const desc = descInput.value;
-                    descInput.value = '';
-                    fetch('/todo/create', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            'description': desc,
-                        }),
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }                    
-                    })
-                    .then(function(response) {
-                        return response.json();
-                    })
-                    .then(function(jsonResponse) {
-                        console.log('response',jsonResponse);
-                        li = document.createElement('li');
-                        li.innerText = desc;
-                        document.getElementById('todo').appendChild(li);
-                        document.getElementById('errors').className = 'hidden';
-                    })
-                    .catch(function(err) {
-                        console.log(err)
-                        document.getElementById('errors').className = '';
-                    })
-                }
-            </script>
-        </body>   
+
+<head>
+    <title>Todo App</title>
+    <link rel="stylesheet" type=text/css href="{{ url_for('static',
+    filename='styles.css') }}" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Dummy ToDo App" />
+</head>
+
+<body>
+    <header>
+        <img id="logo" src="https://cdn.freecodecamp.org/platform/universal/fcc_primary.svg" />
+        <h1>Dummy ToDo App</h1>
+        <nav></nav>
+    </header>
+
+    <div class="lists-wrapper">
+        <h4>TODO LISTS</h4>
+        <form class="form" id="form-list">
+            <input type="text" id="description-list" name="description-list" />
+            <input type="submit" name="Create" />
+        </form>
+        <div id="errors-lists" class="hidden">Somethind went wrong!</div>
+        <ul id="lists">
+            {% for list in lists %}
+            <li>
+                <input class="list-completed" data-id="{{ list.id }}" type="checkbox" {% if list.completed %} checked
+                    {% endif %} />
+                <a href="/lists/{{ list.id }}">
+                    {{ list.name }}
+                </a>
+                <button class="delete-button-list" data-id="{{ list.id }}">&cross;</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="todos-wrapper">
+        <h4 id="active-list" data-id="{{ active_list.id }}"> TODO Items: {{ active_list.name }}</h4>
+        <form class="form" id="form-todo">
+            <input type="text" id="description-todo" name="description-todo" />
+            <input type="submit" name="Create" />
+        </form>
+        <div id="errors-todos" class="hidden">Somethind went wrong!</div>
+        <ul class="list" id="todos">
+            {% for todo in todos %}
+            <li>
+                <input class="check-completed" data-id="{{ todo.id }}" type="checkbox" {% if todo.completed %} checked
+                    {% endif %} />
+                {{ todo.description }}
+                <button class="delete-button" data-id="{{ todo.id }}">&cross;</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="{{url_for('static', filename='app.js')}}"></script>
+</body>
+
 </html>
